@@ -3,6 +3,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_one/Bean.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /// 列表页面
 class DataListPage extends StatefulWidget {
@@ -92,14 +93,13 @@ class DataListState extends State<DataListPage>
             },
           ),
         ),
-        body: RefreshIndicator(
-          onRefresh: getData,
-          child: ListView.builder(
-            itemCount: lists.length,
-            itemBuilder: itemView,
-            controller: scrollController, //滑动控件
-          ),
-        ));
+        body: RefreshIndicator(onRefresh: getData, child: getParent()
+            // ListView.builder(
+            //   itemCount: lists.length,
+            //   itemBuilder: itemView,
+            //   controller: scrollController, //滑动控件
+            // ),
+            ));
   }
 
   Widget itemView(BuildContext context, int index) {
@@ -134,6 +134,76 @@ class DataListState extends State<DataListPage>
           ),
         ));
   }
+
+  Widget getParent() {
+    return StaggeredGridView.countBuilder(
+      shrinkWrap: true,
+      staggeredTileBuilder: (index) =>  StaggeredTile.count(2,index==0?2.5:3),
+      //cross axis cell count
+      mainAxisSpacing: 8,
+      // vertical spacing between items
+      crossAxisSpacing: 8,
+      // horizontal spacing between items
+      crossAxisCount: 4,
+      // no. of virtual columns in grid
+      itemCount: lists.length,
+      itemBuilder: (context, index) => buildImageCard(index),
+      controller: scrollController,
+    );
+  }
+
+  Widget buildImageCard(int index) => Card(
+        color: Colors.white,
+        // margin: EdgeInsets.all(8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          margin: const EdgeInsets.all(4),
+              child: Stack(
+                children: [
+                  Image.network(
+                    //网图加载
+                    lists[index],
+                    fit: BoxFit.cover,
+                    height: 5000,//此处不强制指定宽高，图片显示不正确
+                    width: 5000,
+                  ),
+                  Positioned(
+                    //确定位置
+                    bottom: 10,
+                    left: 10,
+                    right: 10,
+                    child: Text(
+                      lists[index],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    //确定位置
+                    top: 10,
+                    left: 10,
+                    right: 10,
+                    child: Text(
+                      "${lists[index]}"
+                          .replaceAll("https://img.m4a1.top/imgapi.cn/", ""),
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+      );
 
   @override
   bool get wantKeepAlive => true;

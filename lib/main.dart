@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_one/camera.dart';
+import 'package:flutter_one/login.dart';
 import 'package:flutter_one/page.dart';
 import 'package:flutter_one/web.dart'; //导入material ui组件
 
@@ -41,12 +42,29 @@ class MyApp extends StatelessWidget {
         "goPage": (context) => const TwoPage(title: "nasdf"),
 
       },
+      builder: (context,child)=>Scaffold(//用于全局隐藏软键盘
+        body: GestureDetector(
+          onTap: (){
+            hideKeyboard(context);
+          },
+          child: child,//这里需要传入child
+        ),
+      ),
       theme: ThemeData(
         primarySwatch: Colors.blue, //应用主题
       ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),//应用首页路由
       home: const TabboxA(), //应用首页路由
     );
+  }
+
+}
+
+///隐藏软键盘
+void hideKeyboard(BuildContext context){
+  FocusScopeNode focus=FocusScope.of(context);
+  if(!focus.hasPrimaryFocus&&focus.focusedChild!=null){
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 }
 
@@ -275,7 +293,6 @@ class _TabboxAState extends State<TabboxA> {
             TextButton(
               child: const Text("跳转"),
               onPressed: (){
-
                   Navigator.push(
                   context,
                       CupertinoPageRoute(builder: (context) {
@@ -290,7 +307,6 @@ class _TabboxAState extends State<TabboxA> {
               TextButton(
                 child: const Text("相机"),
                 onPressed: (){
-
                   Navigator.push(
                       context,
                       CupertinoPageRoute(builder: (context) {
@@ -302,7 +318,6 @@ class _TabboxAState extends State<TabboxA> {
               TextButton(
                 child: const Text("选择图片"),
                 onPressed: (){
-
                   Navigator.push(
                       context,
                       CupertinoPageRoute(builder: (context) {
@@ -314,7 +329,6 @@ class _TabboxAState extends State<TabboxA> {
               TextButton(
                 child: const Text("web"),
                 onPressed: (){
-
                   Navigator.push(
                       context,
                       CupertinoPageRoute(builder: (context) {
@@ -322,7 +336,18 @@ class _TabboxAState extends State<TabboxA> {
                       })
                   );
                 },
-              )
+              ),
+              TextButton(
+                child: const Text("login"),
+                onPressed: (){
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(builder: (context) {
+                        return  const LoginPage();
+                      })
+                  );
+                },
+              ),
             ],
           )
         ),
