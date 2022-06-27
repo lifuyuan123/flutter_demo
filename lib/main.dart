@@ -7,8 +7,8 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_one/camera.dart';
 import 'package:flutter_one/login.dart';
 import 'package:flutter_one/page.dart';
-import 'package:flutter_one/web.dart'; //导入material ui组件
-
+import 'package:flutter_one/web.dart';
+import 'package:fluttertoast/fluttertoast.dart'; //导入material ui组件
 
 //main 函数中调用了runApp 方法，它的功能是启动Flutter应用。runApp它接受一个 Widget参数，
 // 在本示例中它是一个MyApp对象，MyApp()是 Flutter 应用的根组件。
@@ -28,26 +28,25 @@ class MyApp extends StatelessWidget {
   // 相当于application 设置应用属性
   @override
   Widget build(BuildContext context) {
-    if(Platform.isAndroid) {
-      SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,//设置状态栏颜色
-              statusBarBrightness:Brightness.light//设置沉浸式第一步
-          )
-      );
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent, //设置状态栏颜色
+          statusBarBrightness: Brightness.light //设置沉浸式第一步
+          ));
     }
     return MaterialApp(
-      title: 'Flutter Demo', //应用名称
+      title: 'Flutter Demo',
+      //应用名称
       routes: <String, WidgetBuilder>{
         "goPage": (context) => const TwoPage(title: "nasdf"),
-
       },
-      builder: (context,child)=>Scaffold(//用于全局隐藏软键盘
+      builder: (context, child) => Scaffold(
+        //用于全局隐藏软键盘
         body: GestureDetector(
-          onTap: (){
+          onTap: () {
             hideKeyboard(context);
           },
-          child: child,//这里需要传入child
+          child: child, //这里需要传入child
         ),
       ),
       theme: ThemeData(
@@ -57,37 +56,33 @@ class MyApp extends StatelessWidget {
       home: const TabboxA(), //应用首页路由
     );
   }
-
 }
 
 ///隐藏软键盘
-void hideKeyboard(BuildContext context){
-  FocusScopeNode focus=FocusScope.of(context);
-  if(!focus.hasPrimaryFocus&&focus.focusedChild!=null){
+void hideKeyboard(BuildContext context) {
+  FocusScopeNode focus = FocusScope.of(context);
+  if (!focus.hasPrimaryFocus && focus.focusedChild != null) {
     FocusManager.instance.primaryFocus?.unfocus();
   }
 }
 
-class TwoPage extends StatelessWidget{
+class TwoPage extends StatelessWidget {
   final String title;
-  const TwoPage({Key? key ,required this.title}) : super(key: key);
+
+  const TwoPage({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-   return Scaffold(
-     extendBodyBehindAppBar: true,//设置沉浸式第二步
-     appBar:AppBar(title: Text(title)) ,
-     body: Center(
-       child: Column(
-         mainAxisAlignment: MainAxisAlignment.center,
-         children:const <Widget>[
-           Text("特此")
-         ]
-       ),
-     ),
-   );
+    return Scaffold(
+      extendBodyBehindAppBar: true, //设置沉浸式第二步
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const <Widget>[Text("特此")]),
+      ),
+    );
   }
-
 }
 
 //应用主页  StatefulWidget：它是一个有状态的组件
@@ -142,18 +137,18 @@ class _TestPageState extends State<TestPage> {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  static const platForm=MethodChannel('com.example.flutter_one/jump_plugin');
+  static const platForm = MethodChannel('com.example.flutter_one/jump_plugin');
 
   //flutter跳转原生页面
   void _goTwo() async {
-    String result= await platForm.invokeMethod('goTwo');
+    String result = await platForm.invokeMethod('goTwo');
     print(result);
   }
 
   //flutter传递参数给原生
-  void _sendData() async{
-    Map<String,String> map={"flutter":"我是flutter传递过来的数据"};
-    String result= await platForm.invokeMethod('getData',map);
+  void _sendData() async {
+    Map<String, String> map = {"flutter": "我是flutter传递过来的数据"};
+    String result = await platForm.invokeMethod('getData', map);
     print(result);
   }
 
@@ -163,28 +158,24 @@ class _MyHomePageState extends State<MyHomePage> {
     platForm.setMethodCallHandler(_platformCallHandler);
   }
 
-  Future<dynamic> _platformCallHandler (MethodCall call) async {
-    switch(call.method){
+  Future<dynamic> _platformCallHandler(MethodCall call) async {
+    switch (call.method) {
       case 'goPage':
         print('原生传过来的数据：${call.arguments}');
 
-
-        Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return const MyHomePage(title: "原生点机跳转",);
-            })
-        );
-
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const MyHomePage(
+            title: "原生点机跳转",
+          );
+        }));
 
         return Future.value('原生点机跳转的哦');
-      default :
+      default:
         print('没有找到该方法call.method');
         throw MissingPluginException();
         break;
     }
   }
-
 
   void _incrementCounter() {
     setState(() {
@@ -229,14 +220,14 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             TextButton(
               child: const Text('点击跳转Two页面'),
-              onPressed: (){
+              onPressed: () {
                 print("跳转two");
                 _goTwo();
               },
             ),
             TextButton(
               child: const Text('点击传递数据给原生'),
-              onPressed: (){
+              onPressed: () {
                 print("传递数据");
                 _sendData();
               },
@@ -268,6 +259,8 @@ class _TabboxAState extends State<TabboxA> {
   bool _active = false;
 
   void handleTap() {
+    Fluttertoast.showToast(
+        msg: 'asdf', backgroundColor: Colors.black38, textColor: Colors.white);
     setState(() {
       _active = !_active;
     });
@@ -283,74 +276,60 @@ class _TabboxAState extends State<TabboxA> {
         decoration: BoxDecoration(
             color: _active ? Colors.lightGreen[700] : Colors.grey[600]),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _active ? "active" : "inactive",
-                style: const TextStyle(fontSize: 14, color: Colors.white),
-              ),
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _active ? "active" : "inactive",
+              style: const TextStyle(fontSize: 14, color: Colors.white),
+            ),
             TextButton(
               child: const Text("跳转"),
-              onPressed: (){
-                  Navigator.push(
-                  context,
-                      CupertinoPageRoute(builder: (context) {
-                    // return const MyHomePage(title: "点击跳转过来的",);
-                    return const DataListPage();
-                  })
-                );
-
+              onPressed: () {
+                Navigator.push(context, CupertinoPageRoute(builder: (context) {
+                  // return const MyHomePage(title: "点击跳转过来的",);
+                  return const DataListPage();
+                }));
               },
-
             ),
-              TextButton(
-                child: const Text("相机"),
-                onPressed: (){
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) {
-                        return  const CameraPage(type: 0,);
-                      })
+            TextButton(
+              child: const Text("相机"),
+              onPressed: () {
+                Navigator.push(context, CupertinoPageRoute(builder: (context) {
+                  return const CameraPage(
+                    type: 0,
                   );
-                },
-              ),
-              TextButton(
-                child: const Text("选择图片"),
-                onPressed: (){
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) {
-                        return  const CameraPage(type: 1,);
-                      })
+                }));
+              },
+            ),
+            TextButton(
+              child: const Text("选择图片"),
+              onPressed: () {
+                Navigator.push(context, CupertinoPageRoute(builder: (context) {
+                  return const CameraPage(
+                    type: 1,
                   );
-                },
-              ),
-              TextButton(
-                child: const Text("web"),
-                onPressed: (){
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) {
-                        return  const WebPage();
-                      })
-                  );
-                },
-              ),
-              TextButton(
-                child: const Text("login"),
-                onPressed: (){
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context) {
-                        return  const LoginPage();
-                      })
-                  );
-                },
-              ),
-            ],
-          )
-        ),
+                }));
+              },
+            ),
+            TextButton(
+              child: const Text("web"),
+              onPressed: () {
+                Navigator.push(context, CupertinoPageRoute(builder: (context) {
+                  return const WebPage();
+                }));
+              },
+            ),
+            TextButton(
+              child: const Text("login"),
+              onPressed: () {
+                Navigator.push(context, CupertinoPageRoute(builder: (context) {
+                  return const LoginPage();
+                }));
+              },
+            ),
+          ],
+        )),
       ),
     );
   }
